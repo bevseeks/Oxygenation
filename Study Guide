@@ -1,0 +1,714 @@
+import React, { useState } from 'react';
+import { 
+  Wind, 
+  ShieldAlert, 
+  Download, 
+  ChevronRight, 
+  AlertTriangle, 
+  Activity, 
+  BookOpen, 
+  CheckCircle2, 
+  XCircle, 
+  RefreshCcw, 
+  Info, 
+  Layers, 
+  Thermometer, 
+  Users, 
+  Zap, 
+  Dna, 
+  Microscope, 
+  AlertCircle, 
+  Clock, 
+  Target, 
+  LineChart, 
+  Stethoscope, 
+  UserCheck, 
+  CheckCircle, 
+  Factory, 
+  Pill, 
+  Flame, 
+  Droplets, 
+  ArrowRight, 
+  ArrowDown, 
+  Snowflake, 
+  Utensils, 
+  Skull,
+  HeartPulse,
+  Search,
+  TestTube,
+  X
+} from 'lucide-react';
+
+// --- NCLEX MASTERY BANK (50 QUESTIONS) ---
+const quizData = [
+  { id: 1, question: "A client with chronic allergic asthma is being evaluated for permanent lung changes. Which histologic alteration should the nurse identify as 'bronchial remodeling'?", options: [{ text: "Temporary mucosal edema and thin secretions.", isCorrect: false, rationale: "These are reversible acute features." }, { text: "Thickening of the basement membrane and goblet cell hyperplasia.", isCorrect: true, rationale: "Remodeling involves permanent structural damage including membrane thickening and goblet cell metaplasia." }, { text: "Decreased sensitivity to vagal nerve stimulation.", isCorrect: false, rationale: "Remodeling typically increases airway hyperresponsiveness." }, { text: "Dilation of the terminal bronchioles.", isCorrect: false, rationale: "Asthma involves obstruction/narrowing." }] },
+  { id: 2, question: "Which mediator is primarily responsible for the recruitment of inflammatory cells during the secondary response of an asthma attack, 6 to 12 hours after exposure?", options: [{ text: "Histamine", isCorrect: false, rationale: "Histamine is an immediate response mediator." }, { text: "Neutrophil chemotactic factor", isCorrect: true, rationale: "This factor recruits neutrophils and eosinophils during the late-phase (secondary) response." }, { text: "Bradykinins", isCorrect: false, rationale: "Involved in pain and vasodilation in the initial phase." }, { text: "Serotonin", isCorrect: false, rationale: "Involved in the initial inflammatory cascade." }] },
+  { id: 3, question: "The nurse is reviewing the 'Chain of Transmission.' Which intervention effectively 'breaks the chain' at the Mode of Transmission link?", options: [{ text: "Vaccinating the host.", isCorrect: false, rationale: "Targets Susceptible Host." }, { text: "Performing diligent hand hygiene.", isCorrect: true, rationale: "Hand hygiene stops the movement (mode) of the pathogen from source to host." }, { text: "Masking a coughing client.", isCorrect: false, rationale: "Targets Portal of Exit." }, { text: "Giving antibiotics.", isCorrect: false, rationale: "Targets the Agent." }] },
+  { id: 4, question: "A stone-cutter presents with a chest X-ray showing 'micronodular mottling.' The nurse recognizes this as indicative of:", options: [{ text: "Lobar pneumonia.", isCorrect: false, rationale: "Pneumonia shows consolidation." }, { text: "Occupational lung disease (Silicosis).", isCorrect: true, rationale: "Silica causes fibrotic nodules visible as micronodular mottling." }, { text: "Hyperinflation.", isCorrect: false, rationale: "Shows flattened diaphragm." }, { text: "Asthma flare.", isCorrect: false, rationale: "Usually shows normal or hyperinflated X-ray, not nodules." }] },
+  { id: 5, question: "Which finding in an asthmatic client is a medical emergency known as 'Silent Chest'?", options: [{ text: "Expiratory wheezing.", isCorrect: false, rationale: "Indicates air is still moving." }, { text: "Sudden absence of breath sounds.", isCorrect: true, rationale: "Indicates air movement has stopped; respiratory arrest is imminent." }, { text: "Accessory muscle use.", isCorrect: false, rationale: "Common during flares." }, { text: "SpO2 of 91%.", isCorrect: false, rationale: "Concerning but not the 'silent chest' definition." }] },
+  { id: 6, question: "A client develops asthma symptoms only when taking aspirin for headaches. The nurse identifies this as:", options: [{ text: "Extrinsic Asthma.", isCorrect: false, rationale: "Driven by external allergens like pollen." }, { text: "Drug-induced Asthma.", isCorrect: true, rationale: "Aspirin/NSAIDs can trigger non-allergic inflammatory bronchoconstriction in sensitive individuals." }, { text: "Occupational Asthma.", isCorrect: false, rationale: "Triggered by work-related fumes/dust." }, { text: "Intrinsic Asthma.", isCorrect: false, rationale: "While non-allergic, drug-induced is the specific classification for this trigger." }] },
+  { id: 7, question: "What is the primary etiology of alpha-1 antitrypsin deficiency related emphysema?", options: [{ text: "Smoking.", isCorrect: false, rationale: "Smoking is environmental; alpha-1 is genetic." }, { text: "Genetic lack of a protective enzyme.", isCorrect: true, rationale: "The lack of alpha-1 antitrypsin allows enzymes to destroy alveolar walls." }, { text: "Silica inhalation.", isCorrect: false, rationale: "Causes silicosis." }, { text: "Vagal stimulation.", isCorrect: false, rationale: "Causes functional constriction." }] },
+  { id: 8, question: "Clubbing of the fingers in occupational lung disease indicates:", options: [{ text: "High CO2 levels.", isCorrect: false, rationale: "That is hypercapnia." }, { text: "Chronic, long-term tissue hypoxemia.", isCorrect: true, rationale: "Clubbing is a late sign of long-standing low oxygen." }, { text: "Bacterial infection.", isCorrect: false, rationale: "Infection causes fever/sputum." }, { text: "Side effect of inhalers.", isCorrect: false, rationale: "Not a known side effect." }] },
+  { id: 9, question: "Which distinguishes a 'Pink Puffer' from a 'Blue Bloater'?", options: [{ text: "Cyanosis/Edema.", isCorrect: false, rationale: "Blue Bloater traits." }, { text: "Thin frame and barrel chest.", isCorrect: true, rationale: "Pink Puffer (Emphysema) traits." }, { text: "Productive cough.", isCorrect: false, rationale: "Blue Bloater hallmark." }, { text: "Alpha-1 deficiency.", isCorrect: false, rationale: "Specific cause of emphysema, not a clinical sign." }] },
+  { id: 10, question: "Vagal Stimulation in an asthmatic leads to:", options: [{ text: "Dilation.", isCorrect: false, rationale: "Sympathetic does this." }, { text: "Bronchoconstriction and mucus.", isCorrect: true, rationale: "Vagal (parasympathetic) triggers narrowing and secretion." }, { text: "Alveolar wall destruction.", isCorrect: false, rationale: "Histologic change in emphysema." }, { text: "Ciliary paralysis.", isCorrect: false, rationale: "Caused by toxins." }] },
+  { id: 11, question: "Metaplasia in the bronchial wall of an asthmatic involves:", options: [{ text: "Cell death.", isCorrect: false, rationale: "That is necrosis." }, { text: "Replacement of epithelium by goblet cells.", isCorrect: true, rationale: "Remodeling involves cell type conversion to more mucus-producing types." }, { text: "Thinning of the wall.", isCorrect: false, rationale: "Walls thicken in remodeling." }, { text: "Increased IgE binding.", isCorrect: false, rationale: "A sensitization event, not a cell type change." }] },
+  { id: 12, question: "A client reports symptoms triggered by emotional stress but has no allergies. This is:", options: [{ text: "Extrinsic Asthma.", isCorrect: false, rationale: "IgE/Allergen driven." }, { text: "Intrinsic Asthma.", isCorrect: true, rationale: "Non-allergic; triggered by stress, cold, or exercise." }, { text: "Emphysema.", isCorrect: false, rationale: "Involves alveolar destruction." }, { text: "Restrictive disease.", isCorrect: false, rationale: "Involves fibrosis/expansion issues." }] },
+  { id: 13, question: "The diagnostic hallmark of Cystic Fibrosis is high levels of:", options: [{ text: "Glucose.", isCorrect: false, rationale: "Diabetes." }, { text: "Chloride in sweat.", isCorrect: true, rationale: "CF is a chloride channel defect." }, { text: "Potassium.", isCorrect: false, rationale: "Electrolyte imbalance." }, { text: "Nitrogen.", isCorrect: false, rationale: "Urea cycle." }] },
+  { id: 14, question: "Inorganic particles like silica damage the lungs by:", options: [{ text: "Paralyzing cilia.", isCorrect: true, rationale: "Toxins stop the ciliary escalator, leading to particle deposition and fibrosis." }, { text: "Increasing IgE.", isCorrect: false, rationale: "Allergic asthma." }, { text: "Stimulating beta-receptors.", isCorrect: false, rationale: "Inhalers do this." }, { text: "Thinning mucus.", isCorrect: false, rationale: "Toxins usually thicken or increase mucus." }] },
+  { id: 15, question: "Which PFT result is characteristic of late-stage occupational lung disease?", options: [{ text: "Increased TLC.", isCorrect: false, rationale: "Obstructive sign." }, { text: "Hypoxemia and hypercapnia.", isCorrect: true, rationale: "Indicates severe gas exchange failure due to fibrosis." }, { text: "Improved FEV1.", isCorrect: false, rationale: "FEV1 decreases." }, { text: "Normal ABGs.", isCorrect: false, rationale: "ABGs become abnormal." }] },
+  { id: 16, question: "Hallmark of ARDS is:", options: [{ text: "Wheezing.", isCorrect: false, rationale: "Obstructive sign." }, { text: "Refractory hypoxemia.", isCorrect: true, rationale: "Low oxygen that does not respond to high oxygen delivery." }, { text: "Productive cough.", isCorrect: false, rationale: "Bronchitis/Infection sign." }, { text: "Hyper-resonance.", isCorrect: false, rationale: "Air trapping sign." }] },
+  { id: 17, question: "Which is a 'Link' in the chain of transmission?", options: [{ text: "Portal of Entry.", isCorrect: true, rationale: "One of the 6 essential steps in transmission." }, { text: "Biochemical barrier.", isCorrect: false, rationale: "Host defense, not a link." }, { text: "Remodeling.", isCorrect: false, rationale: "Pathological change." }, { text: "Leukotrienes.", isCorrect: false, rationale: "Inflammatory mediator." }] },
+  { id: 18, question: "ABG showing pH 7.30 and PaCO2 60 indicates:", options: [{ text: "Alkalosis.", isCorrect: false, rationale: "pH is low." }, { text: "Respiratory Acidosis.", isCorrect: true, rationale: "Low pH and high CO2 due to CO2 retention." }, { text: "Compensation.", isCorrect: false, rationale: "Uncompensated because pH is out of range." }, { text: "Metabolic cause.", isCorrect: false, rationale: "CO2 is high, indicating respiratory cause." }] },
+  { id: 19, question: "Pathogen categorized by aerobic/anaerobic needs:", options: [{ text: "Virus.", isCorrect: false, rationale: "Intracellular parasite." }, { text: "Bacteria.", isCorrect: true, rationale: "Classification includes oxygen requirements." }, { text: "Fungi.", isCorrect: false, rationale: "Complex eukaryotic." }, { text: "Prion.", isCorrect: false, rationale: "Misfolded protein." }] },
+  { id: 20, question: "Hallmark of Croup:", options: [{ text: "Rust sputum.", isCorrect: false, rationale: "Pneumonia." }, { text: "Barking cough/Stridor.", isCorrect: true, rationale: "Subglottic edema causes the bark." }, { text: "Clubbing.", isCorrect: false, rationale: "Chronic hypoxia." }, { text: "Vesicles.", isCorrect: false, rationale: "Viral skin/mucosa." }] },
+  { id: 21, question: "Which are the three key features of asthma pathophysiology?", options: [{ text: "Alveolar destruction, edema, fibrosis.", isCorrect: false, rationale: "These are emphysema and occupational signs." }, { text: "Obstruction (reversible), inflammation, hyperreactivity.", isCorrect: true, rationale: "These define the core functional pathology of asthma." }, { text: "Infection, fever, productive cough.", isCorrect: false, rationale: "Bronchitis/Infection traits." }, { text: "Ciliary paralysis, clubbing, hypercapnia.", isCorrect: false, rationale: "Occupational disease traits." }] },
+  { id: 22, question: "A client with 'Anthracosis' has which common name for their condition?", options: [{ text: "Black Lung disease.", isCorrect: true, rationale: "Anthracosis results from coal dust inhalation." }, { text: "Stone cutters lung.", isCorrect: false, rationale: "Silicosis." }, { text: "Shipbuilder's disease.", isCorrect: false, rationale: "Shipbuilders are exposed to asbestos." }, { text: "White out syndrome.", isCorrect: false, rationale: "ARDS." }] },
+  { id: 23, question: "Which asthma trigger is categorized as 'Intrinsic'?", options: [{ text: "Animal dander.", isCorrect: false, rationale: "Extrinsic (allergic)." }, { text: "Cold air and emotional stress.", isCorrect: true, rationale: "Intrinsic asthma is triggered by non-allergic stimuli like stress/weather." }, { text: "Dust mites.", isCorrect: false, rationale: "Extrinsic." }, { text: "Aspirin.", isCorrect: false, rationale: "Drug-induced category." }] },
+  { id: 24, question: "A client has suspected Status Asthmaticus. This is defined as:", options: [{ text: "Asthma triggered by work chemicals.", isCorrect: false, rationale: "Occupational asthma." }, { text: "A severe attack unresponsive to initial therapy.", isCorrect: true, rationale: "Status asthmaticus is a medical emergency that doesn't resolve with standard SABAs." }, { text: "Asthma triggered by exercise.", isCorrect: false, rationale: "Exercise-induced." }, { text: "Asthma with normal IgE levels.", isCorrect: false, rationale: "Intrinsic asthma." }] },
+  { id: 25, question: "The nurse identifies 'nasal flaring' in an infant. This clinical manifestation indicates:", options: [{ text: "Normal habit.", isCorrect: false, rationale: "Always abnormal." }, { text: "Attempt to decrease airway resistance.", isCorrect: true, rationale: "Nasal flaring is an effort to widen the portal for better air entry during distress." }, { text: "Excessive mucus production.", isCorrect: false, rationale: "Indicated by congestion/cough." }, { text: "Vagal nerve suppression.", isCorrect: false, rationale: "Suppression would cause dilation, not flaring." }] },
+  { id: 26, question: "Which is a risk factor for asthma according to your materials?", options: [{ text: "Genetic link on Chromosome 11.", isCorrect: true, rationale: "Several asthma-linked genes are located on Chromosome 11." }, { text: "Type A personality.", isCorrect: false, rationale: "Not an established risk factor." }, { text: "Diet high in Vitamin C.", isCorrect: false, rationale: "Vitamin C is generally protective." }, { text: "Malaria exposure.", isCorrect: false, rationale: "Not related to asthma risk." }] },
+  { id: 27, question: "Exercise-induced asthma is characterized by bronchospasm that occurs:", options: [{ text: "Only during rest after activity.", isCorrect: false, rationale: "It can occur during or after." }, { text: "Following physical exertion, often worse in cold air.", isCorrect: true, rationale: "Physical activity triggers mast cell degranulation in sensitive airways." }, { text: "Only if the person has known allergies.", isCorrect: false, rationale: "Can occur in those without extrinsic allergies." }, { text: "Continuously throughout the day.", isCorrect: false, rationale: "Describes chronic persistent asthma." }] },
+  { id: 28, question: "Which stage of occupational lung disease is characterized by 'micronodular mottling'?", options: [{ text: "Acute inflammatory stage.", isCorrect: false, rationale: "Usually shows edema/haziness." }, { text: "Chronic/Late stage showing fibrotic nodules.", isCorrect: true, rationale: "Mottling represents the calcified/fibrotic nodules from long-term exposure." }, { text: "Asymptomatic stage.", isCorrect: false, rationale: "Imaging may be clear early on." }, { text: "Secondary recovery stage.", isCorrect: false, rationale: "It is irreversible." }] },
+  { id: 29, question: "Which diagnostic result is expected in respiratory failure from asthma?", options: [{ text: "pH 7.42.", isCorrect: false, rationale: "Normal." }, { text: "PaO2 < 60 mmHg despite O2 therapy.", isCorrect: true, rationale: "Indicates profound gas exchange failure." }, { text: "Low HCO3.", isCorrect: false, rationale: "Metabolic acidosis." }, { text: "PaCO2 35.", isCorrect: false, rationale: "Normal." }] },
+  { id: 30, question: "Primary portal of entry for the nurse accidentally stuck with a needle is:", options: [{ text: "Oral mucosa.", isCorrect: false, rationale: "Nasal/mouth entry." }, { text: "Skin puncture.", isCorrect: true, rationale: "Punctures bypass mechanical skin barriers." }, { text: "Intact skin.", isCorrect: false, rationale: "Intact skin is a mechanical barrier." }, { text: "Aerosol droplets.", isCorrect: false, rationale: "Airborne entry." }] },
+  { id: 31, question: "Histamine release during an asthma flare causes:", options: [{ text: "Permanent fibrosis.", isCorrect: false, rationale: "Late/Chronic sign." }, { text: "Rapid bronchoconstriction and mucosal edema.", isCorrect: true, rationale: "Immediate physical result of mast cell degranulation." }, { text: "Decreased permeability.", isCorrect: false, rationale: "Histamine INCREASES permeability." }, { text: "Finger clubbing.", isCorrect: false, rationale: "Late chronic hypoxia sign." }] },
+  { id: 32, question: "Occupational asthma is distinguished by:", options: [{ text: "Occurring only on weekends.", isCorrect: false, rationale: "Symptoms usually improve when away from the workplace." }, { text: "Reaction to specific work-related substances.", isCorrect: true, rationale: "Triggered by fumes, dust, or chemicals encountered at work." }, { text: "Always having high IgE levels.", isCorrect: false, rationale: "May be irritant-induced." }, { text: "Being completely reversible with antibiotics.", isCorrect: false, rationale: "Antibiotics treat bacteria, not asthma." }] },
+  { id: 33, question: "A 'Blue Bloater' has right heart failure because:", options: [{ text: "Blood pressure is too low.", isCorrect: false, rationale: "Incorrect." }, { text: "Chronic hypoxemia causes high pulmonary artery pressure.", isCorrect: true, rationale: "Low oxygen leads to pulmonary vasoconstriction, stressing the right heart (Cor Pulmonale)." }, { text: "The left ventricle is too large.", isCorrect: false, rationale: "Systemic hypertension trait." }, { text: "The heart muscle is destroyed by smoking.", isCorrect: false, rationale: "Unrelated to the 'bloater' profile." }] },
+  { id: 34, question: "Common type of pneumoconiosis from stone-cutting or mining:", options: [{ text: "Anthracosis.", isCorrect: false, rationale: "Coal dust." }, { text: "Silicosis.", isCorrect: true, rationale: "Inhalation of silica dust from rocks." }, { text: "Asbestosis.", isCorrect: false, rationale: "Asbestos fibers." }, { text: "Alveolitis.", isCorrect: false, rationale: "General inflammation." }] },
+  { id: 35, question: "Severe complication of asthma that may cause a 'tension' event:", options: [{ text: "Mucus plug.", isCorrect: false, rationale: "Obstructive but not tension." }, { text: "Pneumothorax.", isCorrect: true, rationale: "Severe coughing or rupture can leak air into the pleural space." }, { text: "Hypercapnia.", isCorrect: false, rationale: "Acid-base change." }, { text: "Metaplasia.", isCorrect: false, rationale: "Structural remodeling." }] },
+  { id: 36, question: "Which lab is prioritized to detect 'early' asthma flares?", options: [{ text: "Chest X-ray.", isCorrect: false, rationale: "Often clear in early flares." }, { text: "Peak Expiratory Flow Rate (PEFR).", isCorrect: true, rationale: "Detects airway narrowing before severe symptoms." }, { text: "ABG.", isCorrect: false, rationale: "Late indicator of severity." }, { text: "WBC count.", isCorrect: false, rationale: "Detects infection." }] },
+  { id: 37, question: "Most common pathogen with 'genetic material in a protein coat':", options: [{ text: "Prion.", isCorrect: false, rationale: "Protein only." }, { text: "Virus.", isCorrect: true, rationale: "Simple DNA/RNA intracellular parasite." }, { text: "Bacteria.", isCorrect: false, rationale: "Complex cell." }, { text: "Helminth.", isCorrect: false, rationale: "Worm." }] },
+  { id: 38, question: "Late-stage emphysema involves loss of:", options: [{ text: "Cilia.", isCorrect: false, rationale: "Bronchitis trait." }, { text: "Elastic recoil.", isCorrect: true, rationale: "Alveolar wall destruction makes lungs 'floppy'." }, { text: "Mucus glands.", isCorrect: false, rationale: "Glands often grow." }, { text: "Diaphragmatic height.", isCorrect: false, rationale: "Diaphragm flattens." }] },
+  { id: 39, question: "Which breaks the chain at the 'Agent' level?", options: [{ text: "Handwashing.", isCorrect: false, rationale: "Mode." }, { text: "Antimicrobial therapy.", isCorrect: true, rationale: "Directly kills or inhibits the germ." }, { text: "Masks.", isCorrect: false, rationale: "Portal/Exit." }, { text: "Vaccination.", isCorrect: false, rationale: "Host." }] },
+  { id: 40, question: "Triad for extrinsic asthma often includes:", options: [{ text: "Obesity/Stress/Edema.", isCorrect: false, rationale: "Incorrect." }, { text: "Asthma/Eczema/Allergic Rhinitis.", isCorrect: true, rationale: "The 'atopic triad' is hallmark for extrinsic types." }, { text: "Cough/Sputum/Fever.", isCorrect: false, rationale: "Bronchitis." }, { text: "Tachycardia/Anxiety/Clubbing.", isCorrect: false, rationale: "Hypoxia signs." }] },
+  { id: 41, question: "Pathogenesis of occupational lung disease begins with:", options: [{ text: "IgE binding.", isCorrect: false, rationale: "Asthma." }, { text: "Paralysis of the ciliary escalator.", isCorrect: true, rationale: "Pollutants stop mechanical clearance." }, { text: "Beta-2 activation.", isCorrect: false, rationale: "Bronchodilation." }, { text: "Vagal nerve firing.", isCorrect: false, rationale: "Functional spasm." }] },
+  { id: 42, question: "Which mediator recruits Eosinophils to the lungs in asthma?", options: [{ text: "Histamine.", isCorrect: false, rationale: "Constricts muscle." }, { text: "Eosinophilic chemotactic factor.", isCorrect: true, rationale: "Specifically draws eosinophils to amplify attack." }, { text: "Prostaglandins.", isCorrect: false, rationale: "Inflammation." }, { text: "Bradykinin.", isCorrect: false, rationale: "Pain." }] },
+  { id: 43, question: "Stage of occupational disease with productive cough and weakness:", options: [{ text: "Early.", isCorrect: false, rationale: "Asymptomatic." }, { text: "Late.", isCorrect: true, rationale: "Progressed to fibrotic failure." }, { text: "Intermediate.", isCorrect: false, rationale: "Mild symptoms." }, { text: "Acute.", isCorrect: false, rationale: "Immediate inflammatory." }] },
+  { id: 44, question: "Which sequence is standard for diagnosing Pulmonary Tuberculosis?", options: [{ text: "Mantoux test, Chest X-ray, Sputum culture.", isCorrect: true, rationale: "Screening -> Visualization -> Definitive confirmation." }, { text: "Sputum culture, Mantoux, X-ray.", isCorrect: false, rationale: "Sputum culture is the final step, not the first." }, { text: "ABG only.", isCorrect: false, rationale: "ABGs show status but don't diagnose the pathogen." }, { text: "Visual assessment.", isCorrect: false, rationale: "Insufficient for definitive diagnosis." }] },
+  { id: 45, question: "Resident flora in the gut is which barrier?", options: [{ text: "Mechanical.", isCorrect: false, rationale: "Skin/Mucus." }, { text: "Biochemical.", isCorrect: true, rationale: "Chemical defense against colonization." }, { text: "Anatomic.", isCorrect: false, rationale: "Structural." }, { text: "Portal.", isCorrect: false, rationale: "A link." }] },
+  { id: 46, question: "Main complication of 'Blue Bloaters' profile:", options: [{ text: "Weight loss.", isCorrect: false, rationale: "Pink Puffer." }, { text: "Cor Pulmonale.", isCorrect: true, rationale: "Right heart failure from chronic pulmonary hypertension." }, { text: "Silent Chest.", isCorrect: false, rationale: "Asthma crisis." }, { text: "Fever.", isCorrect: false, rationale: "Infection." }] },
+  { id: 47, question: "PFT result for obstructive disease:", options: [{ text: "Decreased FEV1/FVC ratio.", isCorrect: true, rationale: "Difficulty blowing air out fast." }, { text: "Decreased TLC.", isCorrect: false, rationale: "Restrictive sign." }, { text: "Increased Cilia.", isCorrect: false, rationale: "Irrelevant." }, { text: "Normal Peak Flow.", isCorrect: false, rationale: "Peak Flow drops." }] },
+  { id: 48, question: "Pathogen with peptidoglycan cell wall:", options: [{ text: "Virus.", isCorrect: false, rationale: "Protein coat." }, { text: "Bacteria.", isCorrect: true, rationale: "Structural feature of bacterial walls." }, { text: "Fungus.", isCorrect: false, rationale: "Chitin wall." }, { text: "Parasite.", isCorrect: false, rationale: "Animal cell-like." }] },
+  { id: 49, question: "Early sign of Status Asthmaticus:", options: [{ text: "Wheezing.", isCorrect: false, rationale: "Expected flare." }, { text: "Chest retractions and nasal flaring.", isCorrect: true, rationale: "Signs of extreme work and severe distress." }, { text: "Pink skin.", isCorrect: false, rationale: "Good oxygenation." }, { text: "Clubbing.", isCorrect: false, rationale: "Chronic sign." }] },
+  { id: 50, question: "Breaking the chain at the 'Susceptible Host':", options: [{ text: "Sterilization.", isCorrect: false, rationale: "Agent." }, { text: "Immunization.", isCorrect: true, rationale: "Strengthens host defense." }, { text: "Glove use.", isCorrect: false, rationale: "Portal." }, { text: "Disinfection.", isCorrect: false, rationale: "Reservoir." }] }
+];
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('asthma');
+  const [quizStarted, setQuizStarted] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore] = useState(0);
+  const [showResults, setShowResults] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [isAnswered, setIsAnswered] = useState(false);
+  
+  // Modal states
+  const [showExerciseModal, setShowExerciseModal] = useState(false);
+  const [showDrugModal, setShowDrugModal] = useState(false);
+
+  const handleOptionClick = (idx) => {
+    if (isAnswered) return;
+    setSelectedOption(idx);
+    setIsAnswered(true);
+    if (quizData[currentQuestion].options[idx].isCorrect) setScore(s => s + 1);
+  };
+
+  const nextQuestion = () => {
+    if (currentQuestion < quizData.length - 1) {
+      setCurrentQuestion(c => c + 1);
+      setSelectedOption(null);
+      setIsAnswered(false);
+    } else {
+      setShowResults(true);
+    }
+  };
+
+  const resetQuiz = () => {
+    setCurrentQuestion(0);
+    setScore(0);
+    setShowResults(false);
+    setSelectedOption(null);
+    setIsAnswered(false);
+  };
+
+  const downloadPDF = () => {
+    const printWindow = window.open('', '_blank');
+    const content = `
+      <html>
+        <head>
+          <title>Unit 4 Mastery Guide - Oxygenation</title>
+          <style>
+            body { font-family: sans-serif; line-height: 1.5; color: #333; padding: 40px; }
+            h1 { color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+            h2 { color: #1d4ed8; margin-top: 30px; }
+            .question-block { margin-bottom: 35px; border-bottom: 1px solid #eee; padding-bottom: 15px; page-break-inside: avoid; }
+            .question-text { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; }
+            .option { margin-left: 20px; }
+            .correct { color: #059669; font-weight: bold; }
+            .rationale-header { margin-top: 15px; font-weight: bold; color: #475569; font-size: 0.9em; }
+            .rationale-list { margin-top: 5px; font-size: 0.9em; background: #f8fafc; padding: 10px; border-radius: 5px; }
+            .footer { margin-top: 50px; font-size: 0.8em; text-align: center; color: #666; }
+          </style>
+        </head>
+        <body>
+          <h1>Unit 4 Mastery: Alterations in Oxygenation</h1>
+          <p>Pathophysiology I - Exam 2 Comprehensive Prep</p>
+          
+          <h2>NCLEX Mastery Bank (50 Questions)</h2>
+          ${quizData.map((q, i) => `
+            <div class="question-block">
+              <div class="question-text">${i + 1}. ${q.question}</div>
+              ${q.options.map(opt => `
+                <div class="option ${opt.isCorrect ? 'correct' : ''}">
+                  ${opt.isCorrect ? '✓' : '○'} ${opt.text}
+                </div>
+              `).join('')}
+              <div class="rationale-header">Rationales:</div>
+              <div class="rationale-list">
+                ${q.options.map(opt => `<div>• <strong>${opt.text}</strong>: ${opt.rationale}</div>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+          <div class="footer">NSG 3280 Galen College of Nursing Prep</div>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-20">
+      <header className="bg-blue-700 text-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 p-2 rounded-lg"><Wind className="text-white" size={28} /></div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight">Oxygenation & Infection</h1>
+              <p className="text-blue-100 text-xs font-medium uppercase tracking-widest italic">Galen Exam 2 Mastery</p>
+            </div>
+          </div>
+          <button onClick={downloadPDF} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-md active:scale-95">
+            <Download size={18} /> Download PDF
+          </button>
+        </div>
+      </header>
+
+      <nav className="bg-white border-b sticky top-20 z-40">
+        <div className="max-w-6xl mx-auto flex overflow-x-auto">
+          {[
+            { id: 'asthma', label: 'Asthma Guide', icon: Wind },
+            { id: 'occ', label: 'Occupational Lung Disease', icon: Factory },
+            { id: 'maps', label: 'Concept Maps', icon: Layers },
+            { id: 'quiz', label: 'NCLEX Quiz', icon: Activity }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 py-4 px-6 flex items-center justify-center gap-2 font-bold text-sm transition-all border-b-4 whitespace-nowrap
+                ${activeTab === tab.id ? 'border-blue-600 text-blue-600 bg-blue-50/50' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+            >
+              <tab.icon size={18} /> {tab.label}
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      <main className="max-w-4xl mx-auto px-4 py-10">
+        {activeTab === 'asthma' && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <section className="bg-white rounded-2xl shadow-sm border p-6">
+              <div className="flex items-center gap-3 mb-6 border-b pb-4">
+                <Dna className="text-purple-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight">Asthma: Intrinsic vs. Extrinsic</h2>
+              </div>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="bg-blue-50 rounded-xl p-5 border border-blue-100 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Zap className="text-blue-600" size={20} />
+                    <h3 className="font-black text-blue-900 uppercase text-sm tracking-widest">Extrinsic (Atopic)</h3>
+                  </div>
+                  <div className="space-y-4 text-sm text-blue-800 font-medium">
+                    <p>• <strong>Onset:</strong> Typically childhood or adolescence</p>
+                    <p>• <strong>Triggers:</strong> Type I Hypersensitivity (IgE mediated); pollen, dust mites, animal dander, mold</p>
+                    <p>• <strong>Manifestations:</strong> Allergic triad (asthma, eczema, rhinitis). Elevated serum IgE</p>
+                    <p>• <strong>Prognosis:</strong> Often improves with age; symptoms may remit during adulthood</p>
+                  </div>
+                </div>
+                <div className="bg-purple-50 rounded-xl p-5 border border-purple-100 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Activity className="text-purple-600" size={20} />
+                    <h3 className="font-black text-purple-900 uppercase text-sm tracking-widest">Intrinsic (Non-Atopic)</h3>
+                  </div>
+                  <div className="space-y-4 text-sm text-purple-800 font-medium">
+                    <p>• <strong>Onset:</strong> Ad adulthood ({'>'} 30 years)</p>
+                    <p>• <strong>Triggers:</strong> Non-allergic; respiratory infections, cold air, exercise, emotional stress, atmospheric pollutants</p>
+                    <p>• <strong>Manifestations:</strong> More severe acute attacks. Normal serum IgE levels; negative skin tests</p>
+                    <p>• <strong>Prognosis:</strong> Generally less favorable; often chronic and more difficult to control</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="bg-white rounded-2xl shadow-sm border p-6">
+              <div className="flex items-center gap-3 mb-6 border-b pb-4">
+                <Wind className="text-blue-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight">Asthma: Etiology & Pathophysiology</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 text-center">
+                  <h4 className="font-black text-blue-800 text-[10px] uppercase tracking-widest mb-1">Key Feature 1</h4>
+                  <p className="text-sm font-bold text-slate-700 leading-tight">Airway Obstruction (Reversible)</p>
+                </div>
+                <div className="p-4 bg-rose-50 rounded-xl border border-rose-100 text-center">
+                  <h4 className="font-black text-rose-800 text-[10px] uppercase tracking-widest mb-1">Key Feature 2</h4>
+                  <p className="text-sm font-bold text-slate-700 leading-tight">Airway Inflammation (Mucosal Edema)</p>
+                </div>
+                <div className="p-4 bg-amber-50 rounded-xl border border-amber-100 text-center">
+                  <h4 className="font-black text-amber-800 text-[10px] uppercase tracking-widest mb-1">Key Feature 3</h4>
+                  <p className="text-sm font-bold text-slate-700 leading-tight">Increased Reactivity (Hyperresponsive)</p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <h3 className="font-black text-slate-400 text-[10px] uppercase tracking-widest border-b pb-1">Risk Factors</h3>
+                    <div className="flex items-start gap-2 text-sm text-slate-600">
+                      <Zap size={14} className="text-amber-500 mt-1 shrink-0" />
+                      <span><strong>Genetic Link:</strong> Chromosome 11 - location of major asthma-linked genes</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-sm text-slate-600">
+                      <Target size={14} className="text-amber-500 mt-1 shrink-0" />
+                      <span><strong>Smaller Airways:</strong> Biological predisposition to obstruction</span>
+                    </div>
+                    <div className="mt-4 bg-amber-50 p-4 rounded-xl border border-amber-100">
+                      <h4 className="font-black text-amber-700 text-[10px] uppercase tracking-widest border-b border-amber-200 pb-1 mb-3 flex items-center gap-2"><Thermometer size={14} /> Other Triggers</h4>
+                      <ul className="text-xs space-y-3 text-slate-700 font-medium">
+                        <li><strong>Cold Temp:</strong> Constricts airway muscles (direct neural effect)</li>
+                        <li><strong>Exercise:</strong> Bronchospasm due to <strong>heat and water loss</strong> from airway mucosa during rapid breathing, leading to cooling and drying which triggers mast cell release</li>
+                        <li><strong>Smoking:</strong> Direct stimulation of airway inflammation, ciliary paralysis, and goblet cell hyperplasia</li>
+                        <li><strong>GERD:</strong> Acid reflux triggers inflammation via <strong>micro-aspiration</strong> of acid into the lungs or through a reflex vagal bronchoconstriction mechanism</li>
+                        <li><strong>Infections:</strong> Viral/bacterial agents trigger a direct inflammatory response</li>
+                        <li><strong>Medications:</strong> 
+                          <ul className="pl-3 mt-1 space-y-1 list-disc text-slate-600">
+                            <li><strong>NSAIDs:</strong> Block COX pathway, shifting metabolism to LOX pathway, causing excessive leukotriene production (allergy-like response)</li>
+                            <li><strong>Beta-Blockers:</strong> Block "fight or flight" (beta-2) receptors, preventing normal bronchodilation</li>
+                          </ul>
+                        </li>
+                        <li><strong>Dietary:</strong> MSG, Beer hops, Tartrazine (Yellow #5) can trigger attacks in sensitive individuals</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="font-black text-slate-400 text-[10px] uppercase tracking-widest border-b pb-1">Specialized Triggers: Expanded</h3>
+                    <div className="space-y-3 text-sm text-slate-700">
+                      <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <p className="font-bold text-slate-800 text-xs uppercase mb-1 flex items-center gap-2"><Activity size={14} className="text-blue-500"/> Exercise-Induced</p>
+                        <ul className="text-xs space-y-2 text-slate-600">
+                          <li><strong>Population:</strong> Common in children/adolescents</li>
+                          <li><strong>Timing:</strong> Bronchospasm begins <strong>3 minutes</strong> after exercise ends; peaks in 5-10 min; resolves within <strong>60 minutes</strong></li>
+                          <li><strong>Avoid:</strong> Cold, dry air sports. <strong>Continue:</strong> Swimming (warm/humid)</li>
+                          <button onClick={() => setShowExerciseModal(true)} className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase py-2 rounded-md shadow-sm transition-colors flex items-center justify-center gap-2"><Search size={12} /> View Pathophysiology Guide</button>
+                        </ul>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <p className="font-bold text-slate-800 text-xs uppercase mb-1 flex items-center gap-2"><Factory size={14} className="text-rose-500"/> Occupational</p>
+                        <ul className="text-xs space-y-1">
+                          <li><strong>Mechanism:</strong> Can be <strong>IgE-mediated</strong> (protein allergens like flour/enzymes) OR <strong>Non-IgE mediated</strong> (irritants like isocyanates)</li>
+                          <li><strong>Clue:</strong> Symptoms <strong>worsen during work week</strong> and improve on weekends/vacations</li>
+                          <li><strong>Mediators:</strong> Inflammatory cytokines, histamine, leukotrienes</li>
+                        </ul>
+                      </div>
+                      <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <p className="font-bold text-slate-800 text-xs uppercase mb-1 flex items-center gap-2"><Pill size={14} className="text-purple-500"/> Drug-Induced</p>
+                        <ul className="text-xs space-y-2 text-slate-600">
+                          <li><strong>Pathophysiology:</strong> inhibits arachidonic acid conversion to prostaglandins → arachidonic acid shunted to leukotriene system → leukotrienes released from mast cells</li>
+                          <li><strong>Reaction Time:</strong> Reaction can be delayed up to <strong>12 hours</strong> after ingestion</li>
+                          <li><strong>Complications:</strong> Excessive leukotrienes can lead to severe bronchospasm and <strong>anaphylaxis</strong></li>
+                          <button onClick={() => setShowDrugModal(true)} className="mt-2 w-full bg-purple-600 hover:bg-purple-700 text-white text-[10px] font-black uppercase py-2 rounded-md shadow-sm transition-colors flex items-center justify-center gap-2"><Search size={12} /> View Pathophysiology Guide</button>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                  <h4 className="font-bold text-slate-800 text-sm mb-4 uppercase flex items-center gap-2 italic"><RefreshCcw size={16} className="text-blue-500" /> The Exacerbation Process</h4>
+                  <div className="space-y-4">
+                    <div className="bg-white border-2 border-slate-100 p-6 rounded-xl shadow-sm">
+                      <p className="font-black text-xs text-slate-400 uppercase tracking-widest mb-6 border-b pb-2">Visual Guide: Pathophysiologic Cascade</p>
+                      <div className="space-y-4 relative">
+                        <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-slate-200 hidden sm:block"></div>
+                        <div className="relative flex flex-col sm:flex-row gap-4 items-start z-10">
+                           <div className="bg-blue-100 text-blue-600 p-2 rounded-full border-4 border-white shadow-sm shrink-0"><AlertTriangle size={20} /></div>
+                           <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 w-full">
+                             <h5 className="font-bold text-slate-800 text-sm mb-1">1. Epithelial Denudation & Metaplasia</h5>
+                             <p className="text-xs text-slate-600 leading-relaxed font-medium">Epithelial denudation and replacement with <strong>goblet cells</strong> leads to significant <strong>mucosal edema</strong></p>
+                           </div>
+                        </div>
+                        <div className="relative flex flex-col sm:flex-row gap-4 items-start z-10">
+                           <div className="bg-purple-100 text-purple-600 p-2 rounded-full border-4 border-white shadow-sm shrink-0"><Layers size={20} /></div>
+                           <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 w-full">
+                             <h5 className="font-bold text-slate-800 text-sm mb-1">2. Hypertrophy & Remodeling</h5>
+                             <p className="text-xs text-slate-600 leading-relaxed font-medium"><strong>Collagen distribution</strong> beneath the basement membrane causes smooth muscle <strong>hypertrophy</strong> and <strong>airway remodeling</strong><br/><span className="text-purple-700 font-bold text-[10px] uppercase mt-1 block">Result: Medication Resistance</span></p>
+                           </div>
+                        </div>
+                        <div className="relative flex flex-col sm:flex-row gap-4 items-start z-10">
+                           <div className="bg-amber-100 text-amber-600 p-2 rounded-full border-4 border-white shadow-sm shrink-0"><Droplets size={20} /></div>
+                           <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 w-full">
+                             <h5 className="font-bold text-slate-800 text-sm mb-1">3. Mucus Secretions</h5>
+                             <p className="text-xs text-slate-600 leading-relaxed font-medium">Goblet cell hyperplasia results in <strong>increased viscosity</strong> of secretions (mucus plugs)</p>
+                           </div>
+                        </div>
+                        <div className="relative flex flex-col sm:flex-row gap-4 items-start z-10">
+                           <div className="bg-rose-100 text-rose-600 p-2 rounded-full border-4 border-white shadow-sm shrink-0"><Wind size={20} /></div>
+                           <div className="bg-rose-50 p-4 rounded-xl border border-rose-200 w-full">
+                             <h5 className="font-bold text-rose-900 text-sm mb-1">4. Airway Obstruction</h5>
+                             <p className="text-xs text-rose-800 leading-relaxed font-medium">The cascade culminates in severe <strong>bronchospasm</strong> and airflow limitation</p>
+                           </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <section className="bg-slate-900 text-white rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-8 opacity-5"><Stethoscope size={200} /></div>
+                  <div className="relative z-10">
+                    <h3 className="text-2xl md:text-3xl font-black mb-8 border-b border-white/20 pb-4 flex items-center gap-3"><HeartPulse className="text-blue-400" size={32} /> Clinical Manifestations</h3>
+                    <div className="grid md:grid-cols-2 gap-12">
+                      <div className="space-y-6">
+                        <h4 className="text-sm font-black text-blue-400 uppercase tracking-[0.2em] border-l-4 border-blue-400 pl-4">Common Assessment Findings</h4>
+                        <ul className="space-y-4 text-lg font-medium">
+                          <li className="flex items-start gap-3"><div className="bg-blue-400/20 p-1.5 rounded-lg mt-1"><ChevronRight size={16} className="text-blue-400" /></div><span><strong>Wheezing:</strong> Heard best over the <strong>location of the obstruction</strong></span></li>
+                          <li className="flex items-start gap-3"><div className="bg-blue-400/20 p-1.5 rounded-lg mt-1"><ChevronRight size={16} className="text-blue-400" /></div><span><strong>Tight feeling in chest</strong></span></li>
+                          <li className="flex items-start gap-3"><div className="bg-blue-400/20 p-1.5 rounded-lg mt-1"><ChevronRight size={16} className="text-blue-400" /></div><span><strong>Dyspnea</strong></span></li>
+                          <li className="flex items-start gap-3"><div className="bg-blue-400/20 p-1.5 rounded-lg mt-1"><ChevronRight size={16} className="text-blue-400" /></div><span><strong>Cough:</strong> Produces <strong>thick, dry sputum</strong></span></li>
+                          <li className="flex items-start gap-3"><div className="bg-blue-400/20 p-1.5 rounded-lg mt-1"><ChevronRight size={16} className="text-blue-400" /></div><span><strong>Tachycardia:</strong> Compensatory from <strong>low oxygen</strong></span></li>
+                        </ul>
+                      </div>
+                      <div className="bg-white/5 p-8 rounded-[2rem] border border-white/10 shadow-inner">
+                        <h4 className="text-sm font-black text-rose-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2"><AlertTriangle size={18} /> Signs of Respiratory Distress</h4>
+                        <div className="space-y-6">
+                          <div className="flex gap-4">
+                            <div className="bg-rose-500/20 p-3 rounded-2xl h-fit"><Activity className="text-rose-500" size={24} /></div>
+                            <div>
+                              <p className="text-xl font-bold text-rose-50">Accessory Muscle Use</p>
+                              <p className="text-sm text-slate-400 italic">Neck and intercostal retractions observed during inspiration</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-4">
+                            <div className="bg-rose-500/20 p-3 rounded-2xl h-fit"><RefreshCcw className="text-rose-500" size={24} /></div>
+                            <div>
+                              <p className="text-xl font-bold text-rose-50">Prolonged Expiration</p>
+                              <p className="text-sm text-slate-400 italic">Struggling to get air out of narrowed, obstructed lower airways</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-4">
+                            <div className="bg-rose-500/20 p-3 rounded-2xl h-fit"><ShieldAlert className="text-rose-500" size={24} /></div>
+                            <div>
+                              <p className="text-xl font-bold text-rose-50 text-rose-200 uppercase tracking-tighter">Minimal Air Sounds</p>
+                              <p className="text-sm text-slate-300 font-bold">"Silent Chest" — impending respiratory failure</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="bg-white p-6 rounded-2xl border shadow-sm">
+                    <h5 className="font-black text-[10px] text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2"><Search size={14} /> Diagnostics</h5>
+                    <ul className="text-sm text-slate-600 space-y-4 font-medium">
+                      <li><strong>Chest X-ray:</strong> <ul className="pl-4 mt-1 space-y-1 list-disc text-xs text-slate-500"><li>Hyperinflation of lungs</li><li>Flattening on the diaphragm</li></ul></li>
+                      <li><strong>Sputum Analysis:</strong> <ul className="pl-4 mt-1 space-y-1 list-disc text-xs text-slate-500"><li>Charcot-Leyden crystals (enzymes for eosinophil membranes)</li><li>Eosinophils</li><li>Curschmann spirals (mucus casts from bronchioles)</li></ul></li>
+                      <li><strong>PFT (Pulmonary Function Tests):</strong> <ul className="pl-4 mt-1 space-y-1 list-disc text-xs text-slate-500"><li><strong>PEFR (Peak Expiratory Flow Rate):</strong> &lt; 80 L/min indicates <strong>severe obstruction</strong></li></ul></li>
+                      <li><strong>Labs:</strong> <ul className="pl-4 mt-1 space-y-1 list-disc text-xs text-slate-500"><li>CBC</li><li>ABGs</li></ul></li>
+                    </ul>
+                  </div>
+                  <div className="bg-rose-50 p-6 rounded-2xl border border-rose-100 shadow-sm">
+                    <h5 className="font-black text-[10px] text-rose-400 uppercase tracking-widest mb-4 flex items-center gap-2"><ShieldAlert size={14} /> Complications</h5>
+                    <ul className="text-sm text-rose-700 font-bold space-y-2">
+                      <li className="flex items-center gap-2"><AlertCircle size={14} /> Status Asthmaticus</li>
+                      <li className="flex items-center gap-2"><AlertCircle size={14} /> Pneumothorax</li>
+                      <li className="flex items-center gap-2"><AlertCircle size={14} /> Respiratory Arrest</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {activeTab === 'occ' && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <section className="bg-white rounded-2xl shadow-sm border p-6">
+              <div className="flex items-center gap-3 mb-6 border-b pb-4">
+                <Factory className="text-rose-500" size={24} />
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight">Pneumoconiosis</h2>
+              </div>
+              <div className="space-y-6">
+                <div className="p-6 bg-rose-50 rounded-2xl border border-rose-100 flex flex-col md:flex-row items-start gap-6">
+                  <div className="bg-white p-4 rounded-xl shadow-sm border border-rose-100 text-center min-w-[120px]">
+                    <Microscope size={32} className="text-rose-500 mx-auto mb-2" />
+                    <span className="text-xs font-black text-rose-900 uppercase">Analysis</span>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-rose-900 text-lg mb-2">Pathophysiology: The Macrophage Response</h4>
+                    <p className="text-sm text-rose-900/80 leading-relaxed font-medium mb-4">Inhaled inorganic substances like dust lead to lung damage and scar tissue formation in the lungs. This causes poor elasticity of lung tissue and breathing difficulties.</p>
+                    <div className="space-y-4 text-sm text-rose-900/80 leading-relaxed font-medium text-slate-700">
+                      <p><strong>Macrophages</strong> are activated in the lungs to deal with the inhaled dust. The <strong>macrophages</strong> secrete <strong>lysosomes</strong> as an attempt to break down the cell wall of the inorganic substance (the invader). However, the dust is inorganic and cannot be broken down.</p>
+                      <p>Instead, the lysosomes release their destructive enzymes to the alveolar walls and damage them. This triggers an <strong>inflammation response</strong> and <strong>collagen</strong> is deposited around the alveoli (forming scar tissue). This results in <strong>pulmonary fibrosis</strong>: stiff alveoli that cannot expand efficiently to let O2 in, leading to restrictive lung disease and severe hypoxemia.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6 bg-slate-900 rounded-2xl text-white shadow-lg overflow-x-auto">
+                   <p className="font-black text-xs text-slate-400 uppercase tracking-[0.3em] mb-4">Pathogenesis Flow</p>
+                   <div className="flex items-center gap-4 min-w-max">
+                      <div className="text-center"><Wind size={24} className="mx-auto mb-2 text-blue-400"/><p className="text-xs font-bold">Inhalation</p></div><ArrowRight className="text-slate-600"/><div className="text-center"><Skull size={24} className="mx-auto mb-2 text-rose-400"/><p className="text-xs font-bold">Macrophage Lysis</p></div><ArrowRight className="text-slate-600"/><div className="text-center"><Droplets size={24} className="mx-auto mb-2 text-amber-400"/><p className="text-xs font-bold">Lysosome Release</p></div><ArrowRight className="text-slate-600"/><div className="text-center"><Layers size={24} className="mx-auto mb-2 text-purple-400"/><p className="text-xs font-bold">Collagen Scarring</p></div><ArrowRight className="text-slate-600"/><div className="text-center"><div className="bg-rose-600 px-3 py-1 rounded text-xs font-black uppercase tracking-wider">Fibrosis</div></div>
+                   </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div>
+                    <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-widest mb-4 border-b pb-1">Common Types</h4>
+                    <div className="space-y-3">
+                      <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm flex justify-between items-center group"><span className="text-sm font-bold text-slate-800 group-hover:text-blue-700">Silicosis</span><span className="px-2 py-1 bg-slate-100 text-[10px] font-bold text-slate-500 rounded uppercase">Dust</span><p className="text-[10px] text-slate-400">Silica (Sand/Rock)</p></div>
+                      <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm flex justify-between items-center group"><span className="text-sm font-bold text-slate-800 group-hover:text-blue-700">Asbestosis</span><span className="px-2 py-1 bg-slate-100 text-[10px] font-bold text-slate-500 rounded uppercase">Fibers</span><p className="text-[10px] text-slate-400">Asbestos (Shipyards)</p></div>
+                      <div className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm flex justify-between items-center group"><span className="text-sm font-bold text-slate-800 group-hover:text-blue-700">Anthracosis</span><span className="px-2 py-1 bg-slate-100 text-[10px] font-bold text-slate-500 rounded uppercase">Coal</span><p className="text-[10px] text-slate-400">Black Lung Disease</p></div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-widest mb-4 border-b pb-1">3 Stages of Manifestation</h4>
+                    <div className="relative pl-8 border-l-2 border-slate-200 space-y-8">
+                      <div className="relative">
+                        <span className="absolute -left-[37px] top-1 w-4 h-4 bg-white border-4 border-emerald-400 rounded-full" />
+                        <p className="text-xs font-black text-emerald-600 uppercase tracking-wide">Early Stage</p>
+                        <ul className="text-xs text-slate-600 space-y-1 font-medium mt-2 list-disc list-inside"><li>Asymptomatic for 10-20 years</li><li>Chest X-rays may show no changes until symptoms occur</li></ul>
+                      </div>
+                      <div className="relative">
+                        <span className="absolute -left-[37px] top-1 w-4 h-4 bg-white border-4 border-amber-400 rounded-full" />
+                        <p className="text-xs font-black text-amber-600 uppercase tracking-wide">Progression</p>
+                        <p className="text-sm font-bold text-slate-700 mt-1">Increasing Pathophysiology</p>
+                        <ul className="text-xs text-slate-600 space-y-1 font-medium mt-2 list-disc list-inside"><li>Productive cough</li><li>Shortness of breath (worsens with exertion)</li><li>Weakness and Fatigue</li><li><strong>Finger clubbing</strong> (sign of chronic hypoxia)</li></ul>
+                      </div>
+                      <div className="relative">
+                        <span className="absolute -left-[37px] top-1 w-4 h-4 bg-white border-4 border-rose-500 rounded-full" />
+                        <p className="text-xs font-black text-rose-600 uppercase tracking-wide">Late Stage</p>
+                        <ul className="text-xs text-slate-600 space-y-2 font-medium mt-2 list-disc list-inside"><li>Chronic Hypoxemia</li><li><strong>Cor pulmonale</strong> (Right-sided heart failure due to pressure from fibrosis)</li><li>Respiratory failure</li><li>Chest X-ray findings: <ul className="pl-6 mt-1 space-y-0.5 list-[circle] text-slate-500 italic"><li>Mottling and haziness</li><li>Nodules</li><li>Fibrosis</li><li>Calcifications</li></ul></li></ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {activeTab === 'maps' && (
+          <div className="space-y-12 animate-in zoom-in-95 duration-500">
+             <div className="bg-white p-8 rounded-[2rem] border shadow-sm overflow-hidden text-center">
+               <h3 className="text-xl font-black text-slate-800 mb-8 flex items-center justify-center gap-2 uppercase tracking-tighter"><Layers className="text-purple-600" size={24} /> Differentiation: Intrinsic vs. Extrinsic</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead><tr className="bg-slate-50 border-b-2 border-slate-100"><th className="p-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">Criteria</th><th className="p-4 text-[10px] font-black uppercase text-blue-600 tracking-widest">Extrinsic (Allergic)</th><th className="p-4 text-[10px] font-black uppercase text-purple-600 tracking-widest">Intrinsic (Non-Allergic)</th></tr></thead>
+                  <tbody className="text-xs font-bold text-slate-700">
+                    <tr className="border-b border-slate-50"><td className="p-4 flex items-center gap-2"><Clock size={14} className="text-slate-400" /> Onset</td><td className="p-4">Childhood / Puberty</td><td className="p-4">Adult ({'>'} 30 years)</td></tr>
+                    <tr className="border-b border-slate-50"><td className="p-4 flex items-center gap-2"><Target size={14} className="text-slate-400" /> Triggers</td><td className="p-4 text-blue-700">Pollen, Dander, Dust Mites</td><td className="p-4 text-purple-700">Infections, Cold, Stress, Pollution</td></tr>
+                    <tr className="border-b border-slate-50"><td className="p-4 flex items-center gap-2"><Dna size={14} className="text-slate-400" /> Lab/IgE</td><td className="p-4">High IgE levels</td><td className="p-4">Normal IgE levels</td></tr>
+                    <tr className="border-b border-slate-50"><td className="p-4 flex items-center gap-2"><Stethoscope size={14} className="text-slate-400" /> Manifestations</td><td className="p-4">The Triad (Asthma/Eczema/Rhinitis)</td><td className="p-4">Severe attacks; no skin tests positive</td></tr>
+                    <tr><td className="p-4 flex items-center gap-2"><LineChart size={14} className="text-slate-400" /> Prognosis</td><td className="p-4 bg-blue-50/30 text-blue-700 font-black">Often improves with age</td><td className="p-4 bg-purple-50/30 text-purple-700 font-black">Less favorable; often chronic</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="bg-white p-8 rounded-[2rem] border shadow-sm text-center">
+              <h3 className="text-xl font-black text-slate-800 mb-8 flex items-center justify-center gap-2 uppercase tracking-tighter"><Users className="text-blue-600" size={24} /> Chain of Transmission</h3>
+              <div className="relative space-y-6 flex flex-col items-center">
+                {[
+                  { label: 'Causative Agent', sub: 'Bacteria, Virus, Fungus', color: 'bg-blue-100 border-blue-400 text-blue-800' },
+                  { label: 'Reservoir', sub: 'Human, Soil, Animal', color: 'bg-emerald-100 border-emerald-400 text-emerald-800' },
+                  { label: 'Portal of Exit', sub: 'Nasal drops, Oral mucosa', color: 'bg-amber-100 border-amber-400 text-amber-800' },
+                  { label: 'Mode of Transmission', sub: 'Direct, Droplet, Vector', color: 'bg-rose-100 border-rose-400 text-rose-800' },
+                  { label: 'Portal of Entry', sub: 'Wound, Mucosa, Puncture', color: 'bg-purple-100 border-purple-400 text-purple-800' },
+                  { label: 'Susceptible Victim', sub: 'Immunocompromised, Malnourished', color: 'bg-slate-200 border-slate-500 text-slate-900' }
+                ].map((step, i, arr) => (
+                  <React.Fragment key={step.label}>
+                    <div className={`${step.color} border-2 px-6 py-4 rounded-2xl text-center w-full max-w-sm relative z-10 shadow-sm transition-transform hover:scale-105`}>
+                      <p className="font-black text-sm uppercase tracking-tight">{step.label}</p>
+                      <p className="text-xs font-medium opacity-80">{step.sub}</p>
+                    </div>
+                    {i < arr.length - 1 && <ChevronRight className="rotate-90 text-slate-300" size={32} />}
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'quiz' && (
+          <div className="animate-in fade-in duration-700">
+            {!quizStarted ? (
+              <div className="bg-white rounded-3xl p-12 text-center border shadow-xl border-blue-100">
+                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Activity size={40} /></div>
+                <h2 className="text-3xl font-black text-slate-800 mb-4 tracking-tighter text-center">Oxygenation Mastery Bank</h2>
+                <p className="text-slate-500 mb-10 text-lg font-medium italic text-center">50 questions focused on Clinical Mastery of Oxygenation Alterations.</p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button onClick={() => setQuizStarted(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-black px-10 py-5 rounded-2xl transition-all shadow-xl shadow-blue-200 text-lg uppercase tracking-widest active:scale-95">Start Final Mastery Set</button>
+                </div>
+              </div>
+            ) : showResults ? (
+              <div className="bg-white rounded-[3rem] shadow-2xl p-12 text-center border animate-in zoom-in-95 duration-500">
+                <h2 className="text-5xl font-black text-slate-800 mb-6 tracking-tighter italic">Evaluation Results</h2>
+                <div className="text-8xl font-black text-blue-600 mb-6 tracking-tighter">{Math.round((score / quizData.length) * 100)}%</div>
+                <p className="text-slate-500 mb-12 text-2xl font-bold">Performance: {score} / {quizData.length}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+                  <button onClick={() => { setCurrentQuestion(0); setScore(0); setShowResults(false); setIsAnswered(false); }} className="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black py-5 rounded-2xl transition-all uppercase tracking-widest"><RefreshCcw size={20} /> Retake</button>
+                  <button onClick={downloadPDF} className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-blue-200 uppercase tracking-widest"><Download size={20} /> Save Study PDF</button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white rounded-[2.5rem] shadow-xl border border-slate-200 overflow-hidden relative">
+                <div className="h-2 bg-slate-100 w-full overflow-hidden">
+                  <div className="h-full bg-blue-600 transition-all duration-700 ease-out" style={{ width: `${((currentQuestion + 1) / quizData.length) * 100}%` }} />
+                </div>
+                <div className="p-10 md:p-14">
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 bg-blue-50 px-4 py-2 rounded-full mb-8 inline-block">Scenario {currentQuestion + 1} of {quizData.length}</span>
+                  <h3 className="text-2xl md:text-3xl font-black text-slate-800 mb-12 leading-tight text-center md:text-left">{quizData[currentQuestion].question}</h3>
+                  <div className="grid gap-4">
+                    {quizData[currentQuestion].options ? quizData[currentQuestion].options.map((option, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleOptionClick(idx)}
+                        disabled={isAnswered}
+                        className={`w-full text-left p-6 rounded-[1.5rem] border-2 transition-all duration-300 flex items-start gap-4 group
+                          ${!isAnswered ? 'border-slate-100 hover:border-blue-400 hover:bg-blue-50' : 
+                            option.isCorrect ? 'border-emerald-500 bg-emerald-50' : 
+                            selectedOption === idx ? 'border-rose-500 bg-rose-50' : 'border-slate-50 opacity-40'}
+                        `}
+                      >
+                        <div className="shrink-0 mt-1">
+                          {isAnswered && option.isCorrect ? <CheckCircle2 className="text-emerald-600" size={24} /> :
+                           isAnswered && selectedOption === idx ? <XCircle className="text-rose-600" size={24} /> :
+                           <div className="w-6 h-6 rounded-full border-2 border-slate-300 group-hover:border-blue-400" />}
+                        </div>
+                        <span className={`font-bold text-lg ${isAnswered && option.isCorrect ? 'text-emerald-900' : 'text-slate-700'}`}>{option.text}</span>
+                      </button>
+                    )) : ''}
+                  </div>
+                  {isAnswered && (
+                    <div className="mt-12 animate-in slide-in-from-bottom-6 duration-500">
+                      <div className="bg-slate-50 border-l-[6px] border-blue-600 p-8 rounded-3xl mb-10 shadow-inner">
+                        <div className="flex items-center gap-2 mb-3"><AlertCircle className="text-blue-600" size={20} /><h4 className="text-sm font-black text-blue-800 uppercase tracking-widest">Clinical Rationale</h4></div>
+                        <p className="text-slate-700 text-xl italic font-medium leading-relaxed">{quizData[currentQuestion].options[selectedOption].rationale}</p>
+                      </div>
+                      <button onClick={nextQuestion} className="w-full bg-slate-900 hover:bg-black text-white font-black py-6 rounded-[2rem] flex justify-center items-center gap-3 transition-all text-xl uppercase tracking-widest shadow-xl">{currentQuestion === quizData.length - 1 ? 'See Results' : 'Next Question'}<ChevronRight size={24} /></button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      {/* --- EXERCISE-INDUCED MODAL --- */}
+      {showExerciseModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200">
+            <div className="bg-blue-600 p-6 flex justify-between items-center text-white">
+              <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2"><Activity size={24} /> Exercise-Induced Pathophysiology</h3>
+              <button onClick={() => setShowExerciseModal(false)} className="hover:bg-blue-700 p-2 rounded-full transition-colors"><X size={24} /></button>
+            </div>
+            <div className="p-8">
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100 flex-1">
+                    <p className="font-black text-blue-800 text-xs uppercase tracking-widest mb-3 italic underline decoration-blue-200">The Cascade</p>
+                    <div className="space-y-4">
+                       <div className="flex items-center gap-3">
+                         <div className="bg-white p-2 rounded-lg shadow-sm border border-blue-100 text-blue-600 font-black">01</div>
+                         <p className="text-sm font-bold text-slate-700">Increased breathing rate (ventilation) occurs during exertion</p>
+                       </div>
+                       <ArrowDown className="mx-auto text-blue-200" size={16} />
+                       <div className="flex items-center gap-3">
+                         <div className="bg-white p-2 rounded-lg shadow-sm border border-blue-100 text-blue-600 font-black">02</div>
+                         <p className="text-sm font-bold text-slate-700">Significant <strong>heat and water loss</strong> from airway mucosa</p>
+                       </div>
+                       <ArrowDown className="mx-auto text-blue-200" size={16} />
+                       <div className="flex items-center gap-3">
+                         <div className="bg-white p-2 rounded-lg shadow-sm border border-blue-100 text-blue-600 font-black">03</div>
+                         <p className="text-sm font-bold text-slate-700"><strong>Increase in osmolarity</strong> in the respiratory tract</p>
+                       </div>
+                       <ArrowDown className="mx-auto text-blue-200" size={16} />
+                       <div className="flex items-center gap-3">
+                         <div className="bg-rose-50 p-2 rounded-lg shadow-sm border border-rose-100 text-rose-600 font-black">04</div>
+                         <p className="text-sm font-black text-rose-800">Trigger: Release of <strong>Mast Cells and Basophils</strong> resulting in bronchoconstriction</p>
+                       </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center">
+                   <p className="text-sm text-slate-600 font-medium leading-relaxed italic">"The rapid ventilation causes mucosal drying and thermal shifts. This increase in osmolarity serves as a potent chemical signal that recruits both mast cells and basophils, leading to severe airway narrowing."</p>
+                </div>
+                <button onClick={() => setShowExerciseModal(false)} className="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-xl shadow-lg transition-all uppercase tracking-widest text-sm">Return to Guide</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- DRUG-INDUCED MODAL --- */}
+      {showDrugModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200">
+            <div className="bg-purple-600 p-6 flex justify-between items-center text-white">
+              <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2"><Pill size={24} /> Drug-Induced Pathophysiology</h3>
+              <button onClick={() => setShowDrugModal(false)} className="hover:bg-purple-700 p-2 rounded-full transition-colors"><X size={24} /></button>
+            </div>
+            <div className="p-8">
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="bg-purple-50 p-6 rounded-2xl border-2 border-purple-100 flex-1">
+                    <p className="font-black text-purple-800 text-xs uppercase tracking-widest mb-4 italic underline decoration-purple-200">Mechanism of Action (Aspirin/NSAIDs)</p>
+                    <div className="grid gap-6 relative">
+                      <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-100 relative z-10">
+                        <p className="text-sm font-bold text-slate-700">1. inhibits arachidonic acid conversion to prostaglandins</p>
+                      </div>
+                      <div className="flex justify-center -my-3"><ArrowDown className="text-purple-300" size={20} /></div>
+                      <div className="bg-white p-4 rounded-xl shadow-sm border border-purple-100 relative z-10">
+                        <p className="text-sm font-bold text-slate-700">2. arachidonic acid shunted to leukotriene system</p>
+                      </div>
+                      <div className="flex justify-center -my-3"><ArrowDown className="text-purple-300" size={20} /></div>
+                      <div className="bg-rose-50 p-4 rounded-xl shadow-sm border border-rose-100 relative z-10">
+                        <p className="text-sm font-black text-rose-800">3. leukotrienes released from mast cells</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 text-center"><p className="text-xs text-slate-600 font-bold leading-relaxed">Onset: Typically 20 minutes to 3 hours post-ingestion (can be delayed up to 12 hours).</p></div>
+                <button onClick={() => setShowDrugModal(false)} className="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-xl shadow-lg transition-all uppercase tracking-widest text-sm">Return to Guide</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <footer className="mt-auto border-t bg-white py-10 px-4 opacity-50">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-right">
+          <div className="flex items-center gap-4 text-left">
+            <Wind className="text-blue-600" size={40} />
+            <div>
+              <p className="font-black text-slate-800 uppercase tracking-tighter text-center">Mastery Series</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Unit 4: Pathophysiology I</p>
+            </div>
+          </div>
+          <p className="text-xs font-bold text-slate-400 tracking-tight text-center md:text-right">Galen College of Nursing &copy; 2026 &bull; Exam 2 Focus</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
